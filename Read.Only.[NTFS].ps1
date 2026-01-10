@@ -1,4 +1,4 @@
-﻿# Suppress ALL output
+# Suppress ALL output
 $ErrorActionPreference = 'SilentlyContinue'
 $null = [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 $null = [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
@@ -303,12 +303,21 @@ $null = $btnUnlock.Add_Click({
         $dl = $matches[1]
         $root = $dl + ":\"
         
-        # Grant full control using SID format (matches lock format)
+        # 1. Re-enable inheritance (this is the key step missing)
+        # This allows the drive to behave like a standard plug-and-play device again
+        icacls $root /inheritance:e /q 2>&1 | Out-Null
+        
+        # 2. Grant Everyone Full Control and replace existing explicit rules
+        # (OI) = Object Inherit, (CI) = Container Inherit, F = Full Access
         icacls $root /grant:r "*S-1-1-0:(OI)(CI)F" /t /c /l /q 2>&1 | Out-Null
         
+        # 3. Optional: Reset the ownership to the Administrators group 
+        # to ensure the current PC has authority to change files
+        takeown /f $root /a /r /d y 2>&1 | Out-Null
+
         # Show success message
         $null = [System.Windows.Forms.MessageBox]::Show(
-            "Drive $dl is now UNLOCKED (Full Access).`n`nYou can now add or modify files.",
+            "Drive $dl is now UNLOCKED (Full Access).`n`nInheritance has been restored and Full Control granted to Everyone.",
             "Drive Unlocked",
             [System.Windows.Forms.MessageBoxButtons]::OK,
             [System.Windows.Forms.MessageBoxIcon]::Information
