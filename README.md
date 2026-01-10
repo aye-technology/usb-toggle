@@ -47,7 +47,7 @@ Since the old method was not reliable and didn't work for removable drives, plea
 * `Read.Only.[NTFS].ps1` (The script)
 
 **How to use:**
-1. Locate the files in the repository and download as ZIP file
+1. Locate the files in the repository and download both files (or just download from [releases](https://github.com/aye-technology/usb-toggle/releases/download/win_new/Toggle.USB.v2.0.zip) page)
 2. Run **`Click to Open.bat`**. This file acts as the launcher for the PowerShell script and will handle the necessary permissions automatically.
 
 ---
